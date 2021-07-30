@@ -187,7 +187,7 @@ void DDEServer::get_vesselid (HWND hClient, ATOM item, DWORD idx)
 	}
 	DDEDATA *ddedata = AllocDatablock (32);
 	char *cbuf = (char*)ddedata->Value;
-	sprintf (cbuf, "%d", id);
+	sprintf (cbuf, "%llu", (size_t)id);
 	PostMessage (hClient, WM_DDE_DATA, (WPARAM)hServer, PackDDElParam(WM_DDE_DATA,(UINT_PTR)ddedata,item));
 }
 
@@ -213,7 +213,7 @@ bool DDEServer::get_objid (HWND hClient, ATOM item, char *fmtstr)
 	if (id) {
 		DDEDATA *ddedata = AllocDatablock(32);
 		char *cbuf = (char*)ddedata->Value;
-		sprintf (cbuf, "%d", id);
+		sprintf (cbuf, "%llu", (size_t)id);
 		PostMessage (hClient, WM_DDE_DATA, (WPARAM)hServer, PackDDElParam(WM_DDE_DATA,(UINT_PTR)ddedata,item));
 		return true;
 	} else {
@@ -255,7 +255,7 @@ bool DDEServer::get_state (HWND hClient, ATOM item, char *fmtstr)
 	bool mapequ = false;
 	char *c;
 	c = strtok (fmtstr,",");
-	n = sscanf(c, "%d", &id);
+	n = sscanf(c, "%llu", &id);
 	if (!n) return false;
 
 	// Currently, this function is only defined for vessels
