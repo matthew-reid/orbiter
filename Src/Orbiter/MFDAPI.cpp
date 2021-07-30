@@ -32,9 +32,9 @@ ExternMFD::~ExternMFD ()
 	if (instr) delete instr;
 }
 
-UINT ExternMFD::Id () const
+size_t ExternMFD::Id () const
 {
-	return (UINT)this;
+	return (size_t)this;
 }
 
 bool ExternMFD::Active () const

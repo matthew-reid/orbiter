@@ -1487,14 +1487,14 @@ typedef struct {
 typedef struct {
 	char *name;
 	DWORD key;
-	int (*msgproc)(UINT,UINT,WPARAM,LPARAM);
+	LRESULT (*msgproc)(UINT,UINT,WPARAM,LPARAM);
 } MFDMODESPEC;
 
 typedef struct {
 	char *name;
 	DWORD key;
 	void *context;
-	int (*msgproc)(UINT,UINT,WPARAM,LPARAM);
+	LRESULT (*msgproc)(UINT,UINT,WPARAM,LPARAM);
 } MFDMODESPECEX;
 
 typedef struct {

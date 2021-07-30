@@ -78,8 +78,8 @@ HRESULT CreateDirectPlayLobbyInterface( LPDIRECTPLAYLOBBY3A* ppDPLobby );
 HRESULT ConnectUsingDialog( HINSTANCE hInstance, DPLAYINFO* pDPInfo );
 VOID    ErrorBox( LPSTR strError, HRESULT hr );
 
-BOOL CALLBACK LobbyWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-BOOL CALLBACK ConnectionSettingsDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam,
+INT_PTR CALLBACK LobbyWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+INT_PTR CALLBACK ConnectionSettingsDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam,
                                             LPARAM lParam );
 
 HRESULT SetupConnection( HINSTANCE hInstance, DPLAYINFO* pDPInfo );

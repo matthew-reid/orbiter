@@ -419,7 +419,7 @@ void ScriptMFD::ReadStatus (FILEHANDLE scn)
 }
 
 // MFD message parser
-int ScriptMFD::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
+LONG_PTR ScriptMFD::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 {
 	switch (msg) {
 	case OAPI_MSG_MFD_OPENEDEX: {

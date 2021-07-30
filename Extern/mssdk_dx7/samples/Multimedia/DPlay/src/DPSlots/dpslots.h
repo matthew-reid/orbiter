@@ -108,7 +108,7 @@ VOID    EnableDlgButton( HWND hDlg, int nIDDlgItem, BOOL bEnable );
 //-----------------------------------------------------------------------------
 // Client functions
 //-----------------------------------------------------------------------------
-BOOL CALLBACK ClientWndProc( HWND hWnd, UINT uMsg, WPARAM wParam,
+INT_PTR CALLBACK ClientWndProc( HWND hWnd, UINT uMsg, WPARAM wParam,
                              LPARAM lParam );
 VOID          ClientSystemMessage( DPLAYINFO* pDPInfo, DPMSG_GENERIC* pMsg,
                                    DWORD dwMsgSize, DPID idFrom, DPID idTo );
@@ -120,7 +120,7 @@ VOID          ClientApplicationMessage( DPLAYINFO* pDPInfo,
 //-----------------------------------------------------------------------------
 // Server functions
 //-----------------------------------------------------------------------------
-BOOL CALLBACK ServerWndProc( HWND hWnd, UINT uMsg, WPARAM wParam,
+INT_PTR CALLBACK ServerWndProc( HWND hWnd, UINT uMsg, WPARAM wParam,
                              LPARAM lParam);
 VOID          ServerSystemMessage( DPLAYINFO* pDPInfo, DPMSG_GENERIC* pMsg,
                                    DWORD dwMsgSize, DPID idFrom, DPID idTo );

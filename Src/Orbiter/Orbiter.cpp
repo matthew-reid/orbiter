@@ -92,26 +92,26 @@ char cwd[512];
 // =======================================================================
 // Global variables
 
-Orbiter*        g_pOrbiter       = NULL;  // application
-BOOL            g_bFrameMoving   = TRUE;
+Orbiter*        g_pOrbiter = NULL;  // application
+BOOL            g_bFrameMoving = TRUE;
 extern BOOL     g_bAppUseZBuffer;
 extern BOOL     g_bAppUseBackBuffer;
 extern TCHAR*   g_strAppTitle;
-double          g_nearplane      = 5.0;
-double          g_farplane       = 5e6;
-const double    MinWarpLimit     = 0.1;  // make variable
-const double    MaxWarpLimit     = 1e5;  // make variable
-DWORD           g_qsaveid        = 0;
-DWORD           g_customcmdid    = 0;
+double          g_nearplane = 5.0;
+double          g_farplane = 5e6;
+const double    MinWarpLimit = 0.1;  // make variable
+const double    MaxWarpLimit = 1e5;  // make variable
+DWORD           g_qsaveid = 0;
+DWORD           g_customcmdid = 0;
 
 // 2D info output flags
-BOOL		    g_bOutputTime    = TRUE;
-BOOL		    g_bOutputFPS     = TRUE;
-BOOL            g_bOutputDim     = TRUE;
-bool		    g_bForceUpdate   = true;
-bool            g_bShowGrapple   = false;
-bool            startvideotab    = false;
-bool            g_bStateUpdate   = false;
+BOOL		    g_bOutputTime = TRUE;
+BOOL		    g_bOutputFPS = TRUE;
+BOOL            g_bOutputDim = TRUE;
+bool		    g_bForceUpdate = true;
+bool            g_bShowGrapple = false;
+bool            startvideotab = false;
+bool            g_bStateUpdate = false;
 
 // Timing parameters
 DWORD  launch_tick;      // counts the first 3 frames
@@ -124,14 +124,14 @@ LARGE_INTEGER fine_counter;      // current high-precision time value
 TimeData td;             // timing information
 
 // Configuration parameters set from Driver.cfg
-DWORD requestDriver     = 0;
+DWORD requestDriver = 0;
 DWORD requestFullscreen = 0;
-DWORD requestSoftware   = 0;
-DWORD requestScreenW    = 640;
-DWORD requestScreenH    = 480;
-DWORD requestWindowW    = 400;
-DWORD requestWindowH    = 300;
-DWORD requestZDepth     = 16;
+DWORD requestSoftware = 0;
+DWORD requestScreenW = 640;
+DWORD requestScreenH = 480;
+DWORD requestWindowW = 400;
+DWORD requestWindowH = 300;
+DWORD requestZDepth = 16;
 
 // Logical objects
 Camera          *g_camera = 0;         // observer camera
@@ -145,7 +145,7 @@ Vessel          *g_pfocusobj = 0;      // previous vessel with input focus
 // This GUID allows DirectPlay to find other instances of the same game on
 // the network.  So it must be unique for every game, and the same for 
 // every instance of that game.  // {C6334FC0-3B80-4fed-89F1-A4DEFEB6DB20}
-GUID Orbiter::AppGUID = { 0xc6334fc0, 0x3b80, 0x4fed, { 0x89, 0xf1, 0xa4, 0xde, 0xfe, 0xb6, 0xdb, 0x20 } };
+GUID Orbiter::AppGUID = {0xc6334fc0, 0x3b80, 0x4fed, { 0x89, 0xf1, 0xa4, 0xde, 0xfe, 0xb6, 0xdb, 0x20 }};
 
 char DBG_MSG[256] = "";
 
@@ -162,17 +162,17 @@ HELPCONTEXT DefHelpContext = {
 // =======================================================================
 // Function prototypes
 
-HRESULT ConfirmDevice (DDCAPS*, D3DDEVICEDESC7*);
+HRESULT ConfirmDevice(DDCAPS*, D3DDEVICEDESC7*);
 
 //LRESULT CALLBACK WndProc3D (HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK BkMsgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK CloseMsgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK ServerDlgProc (HWND, UINT, WPARAM, LPARAM);
-DWORD WINAPI ConsoleInputProc (LPVOID);
+INT_PTR CALLBACK BkMsgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK CloseMsgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK ServerDlgProc (HWND, UINT, WPARAM, LPARAM);
+DWORD WINAPI ConsoleInputProc(LPVOID);
 
-VOID    DestroyWorld ();
-bool    Select_Main (Select &sel);
-void    SetEnvironmentVars ();
+VOID    DestroyWorld();
+bool    Select_Main(Select &sel);
+void    SetEnvironmentVars();
 HANDLE hMutex = 0;
 HANDLE hConsoleMutex = 0;
 
@@ -180,9 +180,9 @@ HANDLE hConsoleMutex = 0;
 // _matherr()
 // trap global math exceptions
 
-int _matherr( struct _exception *except )
+int _matherr(struct _exception *except)
 {
-	if (!strcmp (except->name, "acos")) {
+	if (!strcmp(except->name, "acos")) {
 		except->retval = (except->arg1 < 0.0 ? Pi : 0.0);
 		return 1;
 	}
@@ -194,13 +194,13 @@ int _matherr( struct _exception *except )
 // WinMain()
 // Application entry containing message loop
 
-INT WINAPI WinMain (HINSTANCE hInstance, HINSTANCE, LPSTR strCmdLine, INT nCmdShow)
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR strCmdLine, INT nCmdShow)
 {
 #ifdef INLINEGRAPHICS
 	// determine whether another instance already exists
-	hMutex = CreateMutex (NULL, TRUE, "Test");
+	hMutex = CreateMutex(NULL, TRUE, "Test");
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		MessageBox (NULL, "Another ORBITER application is already running.",
+		MessageBox(NULL, "Another ORBITER application is already running.",
 			"ORBITER Error", MB_OK | MB_ICONEXCLAMATION);
 		return 0;
 	}
@@ -213,70 +213,70 @@ INT WINAPI WinMain (HINSTANCE hInstance, HINSTANCE, LPSTR strCmdLine, INT nCmdSh
 	char *scenario = 0;
 	bool keeplog = false;
 	startvideotab = false;
-	char *cbuf = new char[strlen(strCmdLine)+1]; TRACENEW
-	strcpy (cbuf, strCmdLine);
-	char *pc = strtok (cbuf, " ");
+	char *cbuf = new char[strlen(strCmdLine) + 1]; TRACENEW
+		strcpy(cbuf, strCmdLine);
+	char *pc = strtok(cbuf, " ");
 	while (pc) {
 		if (pc[0] == '-') {
 			switch (pc[1]) {
-			case 's':
-				scenario = strtok (NULL, "\"");
-				g_pOrbiter->SetFastExit (true);
-				break;
-			case 'S':
-				scenario = strtok (NULL, "\"");
-				break;
-			case 'x':
-				g_pOrbiter->SetFastExit (true);
-				break;
-			case 'l':
-				keeplog = true;
-				break;
-			case 'v':
-				startvideotab = true;
-				break;
+				case 's':
+					scenario = strtok(NULL, "\"");
+					g_pOrbiter->SetFastExit(true);
+					break;
+				case 'S':
+					scenario = strtok(NULL, "\"");
+					break;
+				case 'x':
+					g_pOrbiter->SetFastExit(true);
+					break;
+				case 'l':
+					keeplog = true;
+					break;
+				case 'v':
+					startvideotab = true;
+					break;
 			}
 		}
-		pc = strtok (NULL, " ");
+		pc = strtok(NULL, " ");
 	}
 
-	INITLOG ("Orbiter.log", keeplog); // init log file
+	INITLOG("Orbiter.log", keeplog); // init log file
 #ifdef ISBETA
-	LOGOUT ("Build %s BETA [v.%06d]", __DATE__, g_pOrbiter->GetVersion());
+	LOGOUT("Build %s BETA [v.%06d]", __DATE__, g_pOrbiter->GetVersion());
 #else
-	LOGOUT ("Build %s [v.%06d]", __DATE__, g_pOrbiter->GetVersion());
+	LOGOUT("Build %s [v.%06d]", __DATE__, g_pOrbiter->GetVersion());
 #endif
 	// Initialise random number generator
 	//srand ((unsigned)time (NULL));
 	srand(12345);
-	LOGOUT ("Timer precision: %g sec", fine_counter_step);
+	LOGOUT("Timer precision: %g sec", fine_counter_step);
 
 	HRESULT hr;
 	// Create application
-	if (FAILED (hr = g_pOrbiter->Create (hInstance, strCmdLine))) {
+	if (FAILED(hr = g_pOrbiter->Create(hInstance, strCmdLine))) {
 		LOGOUT("Application creation failed");
-		MessageBox (NULL, "Application creation failed!\nTerminating.",
+		MessageBox(NULL, "Application creation failed!\nTerminating.",
 			"Orbiter Error", MB_OK | MB_ICONERROR);
 		return 0;
 	}
 
-	oapiRegisterCustomControls (hInstance);
-	setlocale (LC_CTYPE, "");
+	oapiRegisterCustomControls(hInstance);
+	setlocale(LC_CTYPE, "");
 
-	g_pOrbiter->Run (scenario);
+	g_pOrbiter->Run(scenario);
 	delete g_pOrbiter;
-	delete []cbuf;
+	delete[]cbuf;
 	return 0;
 }
 
-void SetEnvironmentVars ()
+void SetEnvironmentVars()
 {
 	// Set search path to "Modules" subdirectory so that DLLs are found
-	char *ppath = getenv ("PATH");
+	char *ppath = getenv("PATH");
 	if (ppath) {
-		char *cbuf = new char[strlen(ppath)+15]; TRACENEW
-		sprintf (cbuf, "PATH=%s;Modules", ppath);
-		_putenv (cbuf);
+		char *cbuf = new char[strlen(ppath) + 15]; TRACENEW
+			sprintf(cbuf, "PATH=%s;Modules", ppath);
+		_putenv(cbuf);
 		delete []cbuf;
 	} else {
 		_putenv ("PATH=Modules");
@@ -288,19 +288,19 @@ void SetEnvironmentVars ()
 // InitializeWorld()
 // Create logical objects
 
-bool Orbiter::InitializeWorld (char *name)
+bool Orbiter::InitializeWorld(char *name)
 {
 	if (hRenderWnd)
-		g_pane = new Pane (gclient, hRenderWnd, viewW, viewH, viewBPP); TRACENEW
-	if (g_camera) delete g_camera;
-	g_camera = new Camera (g_nearplane, g_farplane); TRACENEW
-	g_camera->ResizeViewport (viewW, viewH);
+		g_pane = new Pane(gclient, hRenderWnd, viewW, viewH, viewBPP); TRACENEW
+		if (g_camera) delete g_camera;
+	g_camera = new Camera(g_nearplane, g_farplane); TRACENEW
+		g_camera->ResizeViewport(viewW, viewH);
 	if (g_psys) delete g_psys;
-	g_psys = new PlanetarySystem (name); TRACENEW
-	if (!g_psys->nObj()) {  // sanity check
-		DestroyWorld();
-		return false;
-	}
+	g_psys = new PlanetarySystem(name); TRACENEW
+		if (!g_psys->nObj()) {  // sanity check
+			DestroyWorld();
+			return false;
+		}
 	return true;
 }
 
@@ -308,10 +308,10 @@ bool Orbiter::InitializeWorld (char *name)
 // DestroyWorld()
 // Destroy logical objects
 
-VOID DestroyWorld ()
+VOID DestroyWorld()
 {
 	if (g_camera) { delete g_camera; g_camera = 0; }
-	if (g_psys)   { delete g_psys;   g_psys = 0; }
+	if (g_psys) { delete g_psys;   g_psys = 0; }
 }
 
 //=============================================================================
@@ -323,71 +323,71 @@ VOID DestroyWorld ()
 // Name: Orbiter()
 // Desc: Application constructor. Sets attributes for the app.
 //-----------------------------------------------------------------------------
-Orbiter::Orbiter ()
+Orbiter::Orbiter()
 {
 	// override base class defaults
-    //m_bAppUseZBuffer  = TRUE;
-    //m_fnConfirmDevice = ConfirmDevice;
+	//m_bAppUseZBuffer  = TRUE;
+	//m_fnConfirmDevice = ConfirmDevice;
 
-	timeBeginPeriod (1);
-	if (use_fine_counter = QueryPerformanceFrequency (&fine_counter_freq)) {
+	timeBeginPeriod(1);
+	if (use_fine_counter = QueryPerformanceFrequency(&fine_counter_freq)) {
 		double freq = fine_counter_freq.LowPart;
 		if (fine_counter_freq.HighPart) freq += fine_counter_freq.HighPart*4294967296.0;
-		fine_counter_step = 1.0/freq;
+		fine_counter_step = 1.0 / freq;
 	}
-	
-	nmodule         = 0;
-	pDI             = new DInput (this); TRACENEW
-	pConfig         = NULL;
-	pState          = NULL;
-	pMainDlg        = NULL;
-	pDlgMgr         = NULL;
-	ddeserver       = NULL;
-	bFullscreen     = false;
+
+	nmodule = 0;
+	pDI = new DInput(this); TRACENEW
+		pConfig = NULL;
+	pState = NULL;
+	pMainDlg = NULL;
+	pDlgMgr = NULL;
+	ddeserver = NULL;
+	bFullscreen = false;
 	viewW = viewH = viewBPP = 0;
 #ifdef INLINEGRAPHICS
-	oclient         = NULL;
+	oclient = NULL;
 #endif
-	gclient         = NULL;
+	gclient = NULL;
 #ifdef NETCONNECT
-	NetConn         = NULL;
-	NetServer       = NULL;
-	NetClient       = NULL;
+	NetConn = NULL;
+	NetServer = NULL;
+	NetClient = NULL;
 #endif // NETCONNECT
-	hRenderWnd      = NULL;
-	hServerWnd      = NULL;
-	hBk             = NULL;
-	hConsoleTh      = NULL;
-	hScnInterp      = NULL;
-	snote_playback  = NULL;
-	nsnote          = 0;
-	bVisible        = false;
-	bAllowInput     = false;
-	bRunning        = false;
+	hRenderWnd = NULL;
+	hServerWnd = NULL;
+	hBk = NULL;
+	hConsoleTh = NULL;
+	hScnInterp = NULL;
+	snote_playback = NULL;
+	nsnote = 0;
+	bVisible = false;
+	bAllowInput = false;
+	bRunning = false;
 	bRequestRunning = false;
-	bSession        = false;
+	bSession = false;
 	bEnableLighting = TRUE;
-	bUseStencil     = false;
-	bKeepFocus      = false;
-	bRealtime       = TRUE;
-	bEnableAtt      = TRUE;
-	bRecord         = false;
-	bPlayback       = false;
-	bCapture        = false;
-	bFastExit       = false;
-	bRoughType      = false;
+	bUseStencil = false;
+	bKeepFocus = false;
+	bRealtime = TRUE;
+	bEnableAtt = TRUE;
+	bRecord = false;
+	bPlayback = false;
+	bCapture = false;
+	bFastExit = false;
+	bRoughType = false;
 	//lstatus.bkgDC   = 0;
-	cfglen          = 0;
-	ncustomcmd      = 0;
+	cfglen = 0;
+	ncustomcmd = 0;
 	D3DMathSetup();
-	script          = NULL;
+	script = NULL;
 
-	simheapsize     = 0;
+	simheapsize = 0;
 
 	for (int i = 0; i < 15; i++)
 		ctrlKeyboard[i] = ctrlJoystick[i] = ctrlTotal[i] = 0; // reset keyboard and joystick attitude requests
 
-	memset (simkstate, 0, 256);
+	memset(simkstate, 0, 256);
 
 #ifdef NETCONNECT
 	OrbiterConnect::Startup();
@@ -398,16 +398,16 @@ Orbiter::Orbiter ()
 // Name: ~Orbiter()
 // Desc: Application destructor.
 //-----------------------------------------------------------------------------
-Orbiter::~Orbiter ()
+Orbiter::~Orbiter()
 {
-	CloseApp ();
+	CloseApp();
 }
 
 //-----------------------------------------------------------------------------
 // Name: Create()
 // Desc: This method selects a D3D device
 //-----------------------------------------------------------------------------
-HRESULT Orbiter::Create (HINSTANCE hInstance, TCHAR* strCmdLine)
+HRESULT Orbiter::Create(HINSTANCE hInstance, TCHAR* strCmdLine)
 {
 	if (pMainDlg) return S_OK; // already created
 
@@ -418,98 +418,98 @@ HRESULT Orbiter::Create (HINSTANCE hInstance, TCHAR* strCmdLine)
 
 	// Enable tab controls
 	InitCommonControls();
-	LoadLibrary ("riched20.dll");
+	LoadLibrary("riched20.dll");
 
 	// parameter manager - parses from master config file
 	hInst = hInstance;
-	pConfig = new Config (MasterConfigFile); TRACENEW
-	strcpy (cfgpath, pConfig->CfgDirPrm.ConfigDir);   cfglen = strlen (cfgpath);
+	pConfig = new Config(MasterConfigFile); TRACENEW
+		strcpy(cfgpath, pConfig->CfgDirPrm.ConfigDir);   cfglen = strlen(cfgpath);
 
-	if (FAILED (hr = pDI->Create (hInstance))) return hr;
+	if (FAILED(hr = pDI->Create(hInstance))) return hr;
 
 	// validate configuration
 	if (pConfig->CfgJoystickPrm.Joy_idx > GetDInput()->NumJoysticks()) pConfig->CfgJoystickPrm.Joy_idx = 0;
 
 	// Read key mapping from file (or write default keymap)
-	if (!keymap.Read ("keymap.cfg")) keymap.Write ("keymap.cfg");
+	if (!keymap.Read("keymap.cfg")) keymap.Write("keymap.cfg");
 
-    pState = new State(); TRACENEW
+	pState = new State(); TRACENEW
 
-	// Register main dialog window class
-	GetClassInfo (hInstance, "#32770", &wndClass); // override default dialog class
-	wndClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE (IDI_MAIN_ICON));
-	RegisterClass (&wndClass);
+		// Register main dialog window class
+		GetClassInfo(hInstance, "#32770", &wndClass); // override default dialog class
+	wndClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MAIN_ICON));
+	RegisterClass(&wndClass);
 
 	// Find out if we are running under Linux/WINE
 	HKEY key;
-	long ret = RegOpenKeyEx (HKEY_CURRENT_USER, TEXT("Software\\Wine"), 0, KEY_QUERY_VALUE, &key);
-	RegCloseKey (key);
+	long ret = RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Wine"), 0, KEY_QUERY_VALUE, &key);
+	RegCloseKey(key);
 	bWINEenv = (ret == ERROR_SUCCESS);
 
 	// Register HTML viewer class
-	RegisterHtmlCtrl (hInstance, UseHtmlInline());
-	SplitterCtrl::RegisterClass (hInstance);
+	RegisterHtmlCtrl(hInstance, UseHtmlInline());
+	SplitterCtrl::RegisterClass(hInstance);
 
 	if (pConfig->CfgDemoPrm.bBkImage) {
-		hBk = CreateDialog (hInstance, MAKEINTRESOURCE(IDD_DEMOBK), NULL, BkMsgProc);
-		ShowWindow (hBk, SW_MAXIMIZE);
+		hBk = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DEMOBK), NULL, BkMsgProc);
+		ShowWindow(hBk, SW_MAXIMIZE);
 	}
-	
+
 	// Create the "launchpad" main dialog window
-	pMainDlg = new MainDialog (this); TRACENEW
-	hDlg     = pMainDlg->Create (startvideotab);
+	pMainDlg = new MainDialog(this); TRACENEW
+		hDlg = pMainDlg->Create(startvideotab);
 
 #ifdef INLINEGRAPHICS
-	oclient = new OrbiterGraphics (this); TRACENEW
-	gclient = oclient;
+	oclient = new OrbiterGraphics(this); TRACENEW
+		gclient = oclient;
 	gclient->clbkInitialise();
-	pMainDlg->UnhidePage (4, "Video");
+	pMainDlg->UnhidePage(4, "Video");
 #else
-	SetWindowText (hDlg, "OpenOrbiter Server Launchpad");
+	SetWindowText(hDlg, "OpenOrbiter Server Launchpad");
 #endif // INLINEGRAPHICS
 
 	Instrument::RegisterBuiltinModes();
 
-	script = new ScriptInterface (this); TRACENEW
+	script = new ScriptInterface(this); TRACENEW
 
 	{
 		BOOL cleartype, ok;
-		ok = SystemParametersInfo (SPI_GETFONTSMOOTHING, 0, &cleartype, 0);
+		ok = SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &cleartype, 0);
 		bSysClearType = (ok && cleartype);
 		//if (pConfig->CfgDebugPrm.bForceReenableSmoothFont) bSysClearType = true;
 	}
-	if (pConfig->CfgDebugPrm.bDisableSmoothFont)
-		ActivateRoughType();
+		if (pConfig->CfgDebugPrm.bDisableSmoothFont)
+			ActivateRoughType();
 
 	// preload fixed plugin modules
-	LoadFixedModules ();
+	LoadFixedModules();
 	memstat = new MemStat;
 
 	// preload active plugin modules
 	for (int i = 0; i < pConfig->nactmod; i++)
-		LoadModule ("Modules\\Plugin", pConfig->actmod[i]);
+		LoadModule("Modules\\Plugin", pConfig->actmod[i]);
 
-    return S_OK;
+	return S_OK;
 }
 
 //-----------------------------------------------------------------------------
 // Name: SaveConfig()
 // Desc: Save configuration files (before closedown)
 //-----------------------------------------------------------------------------
-void Orbiter::SaveConfig ()
+void Orbiter::SaveConfig()
 {
-	pConfig->Write (); // save current settings
-	pMainDlg->WriteExtraParams ();
+	pConfig->Write(); // save current settings
+	pMainDlg->WriteExtraParams();
 }
 
 //-----------------------------------------------------------------------------
 // Name: CloseApp()
 // Desc: Cleanup for program end
 //-----------------------------------------------------------------------------
-VOID Orbiter::CloseApp (bool fast_shutdown)
+VOID Orbiter::CloseApp(bool fast_shutdown)
 {
 	SaveConfig();
-	while (nmodule) UnloadModule (module[0].name);
+	while (nmodule) UnloadModule(module[0].name);
 
 	if (bRoughType)
 		DeactivateRoughType();
@@ -526,35 +526,35 @@ VOID Orbiter::CloseApp (bool fast_shutdown)
 		if (memstat) delete memstat;
 		if (pConfig)  delete pConfig;
 		if (pMainDlg) delete pMainDlg;
-		if (hServerWnd) DestroyWindow (hServerWnd);
-		if (hBk) DestroyWindow (hBk);
+		if (hServerWnd) DestroyWindow(hServerWnd);
+		if (hBk) DestroyWindow(hBk);
 		if (pState)   delete pState;
 		if (ddeserver) delete ddeserver;
 		if (script) delete script;
 		if (ncustomcmd) {
-			for (DWORD i = 0; i < ncustomcmd; i++) delete []customcmd[i].label;
-			delete []customcmd;
+			for (DWORD i = 0; i < ncustomcmd; i++) delete[]customcmd[i].label;
+			delete[]customcmd;
 		}
-		oapiUnregisterCustomControls (hInst);
+		oapiUnregisterCustomControls(hInst);
 	}
-	timeEndPeriod (1);
+	timeEndPeriod(1);
 }
 
 //-----------------------------------------------------------------------------
 // Name: GetVersion()
 // Desc: Returns orbiter build version as integer in YYMMDD format
 //-----------------------------------------------------------------------------
-int Orbiter::GetVersion () const
+int Orbiter::GetVersion() const
 {
 	static int v = 0;
 	if (!v) {
 		static char *mstr[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 		char ms[32];
 		int day, month, year;
-		sscanf (__DATE__, "%s%d%d", ms, &day, &year);
+		sscanf(__DATE__, "%s%d%d", ms, &day, &year);
 		for (month = 0; month < 12; month++)
-			if (!_strnicmp (ms, mstr[month], 3)) break;
-		v = (year%100)*10000 + (month+1)*100 + day;
+			if (!_strnicmp(ms, mstr[month], 3)) break;
+		v = (year % 100) * 10000 + (month + 1) * 100 + day;
 	}
 	return v;
 }
@@ -563,12 +563,12 @@ int Orbiter::GetVersion () const
 // Name: LoadFixedModules()
 // Desc: Load all plugin modules from the "startup" directory
 //-----------------------------------------------------------------------------
-void Orbiter::LoadFixedModules ()
+void Orbiter::LoadFixedModules()
 {
 	char cbuf[256];
 	char *path = "Modules\\Startup";
 	struct _finddata_t fdata;
-	long fh = _findfirst ("Modules\\Startup\\*.dll", &fdata);
+	intptr_t fh = _findfirst("Modules\\Startup\\*.dll", &fdata);
 	if (fh == -1) return; // no files found
 	do {
 		strcpy (cbuf, fdata.name);
@@ -603,7 +603,7 @@ HINSTANCE Orbiter::LoadModule (const char *path, const char *name)
 		nmodule++;
 	} else {
 		DWORD err = GetLastError();
-		LOGOUT_ERR ("Failed loading module %s (code %d)", cbuf, err);
+		LOGOUT_ERR("Failed loading module %s (code %d)", cbuf, err);
 	}
 	return hi;
 }
@@ -3168,12 +3168,12 @@ void Orbiter::DDERequest (HWND hClient, int format, ATOM item)
 // Implementation of class TimeData
 //=============================================================================
 
-TimeData::TimeData ()
+TimeData::TimeData()
 {
 	Reset();
 }
 
-void TimeData::Reset (Orbiter *orbiter, double mjd_ref)
+void TimeData::Reset(Orbiter *orbiter, double mjd_ref)
 {
 	TWarp = TWarpTarget = 1.0;
 	TWarpDelay = 0.0;
@@ -3189,16 +3189,16 @@ void TimeData::Reset (Orbiter *orbiter, double mjd_ref)
 	bFixedStep = (fixed_step > 0.0);
 }
 
-void TimeData::BeginStep (double deltat, bool running)
+void TimeData::BeginStep(double deltat, bool running)
 {
 	bWarpChanged = false;
 	SysT1 = SysT0 + (SysDT = deltat);
-	iSysDT = 1.0/SysDT; // note that delta_ms==0 is trapped earlier
+	iSysDT = 1.0 / SysDT; // note that delta_ms==0 is trapped earlier
 
 	framecount++;
 	syst_acc += SysDT;
 	if ((int)SysT1 != sys_tick) {
-		fps = framecount/syst_acc;
+		fps = framecount / syst_acc;
 		framecount = 0;
 		syst_acc = 0.0;
 		sys_tick = (int)SysT1;
@@ -3210,24 +3210,24 @@ void TimeData::BeginStep (double deltat, bool running)
 			if (TWarpDelay == 0.0)
 				TWarp = TWarpTarget;
 			else if (TWarpTarget > TWarp)
-				TWarp = min (TWarpTarget, TWarp * pow (10, SysDT/TWarpDelay));
+				TWarp = min(TWarpTarget, TWarp * pow(10, SysDT / TWarpDelay));
 			else
-				TWarp = max (TWarpTarget, TWarp * pow (10, -SysDT/TWarpDelay));
+				TWarp = max(TWarpTarget, TWarp * pow(10, -SysDT / TWarpDelay));
 			bWarpChanged = true;
 		}
 
 		SimDT = (bFixedStep ? fixed_step : SysDT) * TWarp;
-		iSimDT = 1.0/SimDT;
+		iSimDT = 1.0 / SimDT;
 		if ((SimT1_inc += SimDT) > 1e6) {
 			SimT1_ofs += 1e6;
 			SimT1_inc -= 1e6;
 		}
 		SimT1 = SimT1_ofs + SimT1_inc;
-		MJD1 = MJD_ref + Day (SimT1);
+		MJD1 = MJD_ref + Day(SimT1);
 	}
 }
 
-void TimeData::EndStep (bool running)
+void TimeData::EndStep(bool running)
 {
 	SysT0 = SysT1;
 
@@ -3239,18 +3239,18 @@ void TimeData::EndStep (bool running)
 	}
 }
 
-double TimeData::JumpTo (double mjd)
+double TimeData::JumpTo(double mjd)
 {
-	double dt = (mjd-MJD0)*86400.0;
+	double dt = (mjd - MJD0)*86400.0;
 	MJD0 = MJD1 = mjd;
-	SimT0 = SimT1 = SimT1_ofs = (mjd-MJD_ref)*86400.0;
+	SimT0 = SimT1 = SimT1_ofs = (mjd - MJD_ref)*86400.0;
 	SimT1_inc = 0.0;
 	return dt;
 }
 
-void TimeData::SetWarp (double warp, double delay) {
+void TimeData::SetWarp(double warp, double delay) {
 	TWarpTarget = warp;
-	TWarpDelay  = delay;
+	TWarpDelay = delay;
 	if (delay == 0.0) {
 		TWarp = warp;
 		bWarpChanged = true;
@@ -3265,83 +3265,83 @@ void TimeData::SetWarp (double warp, double delay) {
 // Name: Callback_Main()
 // Desc: Callback for main menu
 //-----------------------------------------------------------------------------
-bool Callback_Main (Select *sel, int item, char*, void *data)
+bool Callback_Main(Select *sel, int item, char*, void *data)
 {
 	switch (item) {
-	case 0:
-		g_pOrbiter->Pause (g_pOrbiter->bRunning);
-		break;
-	case 1:
-		if (g_pOrbiter->hRenderWnd) PostMessage (g_pOrbiter->hRenderWnd, WM_CLOSE, 0, 0);
-		break;
-	case 2:
-		if (g_pOrbiter->hRenderWnd) PostMessage (g_pOrbiter->hRenderWnd, WM_CLOSE, 0, 0);
-		PostMessage (g_pOrbiter->hDlg, WM_CLOSE, 0, 0);
-		break;
+		case 0:
+			g_pOrbiter->Pause(g_pOrbiter->bRunning);
+			break;
+		case 1:
+			if (g_pOrbiter->hRenderWnd) PostMessage(g_pOrbiter->hRenderWnd, WM_CLOSE, 0, 0);
+			break;
+		case 2:
+			if (g_pOrbiter->hRenderWnd) PostMessage(g_pOrbiter->hRenderWnd, WM_CLOSE, 0, 0);
+			PostMessage(g_pOrbiter->hDlg, WM_CLOSE, 0, 0);
+			break;
 	}
 	return true;
 }
 
-BOOL CALLBACK BkMsgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK BkMsgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
-	case WM_SIZE: {
-		RECT r;
-		GetWindowRect (hDlg, &r);
-		MoveWindow (GetDlgItem (hDlg, IDC_IMG), 0, 0, r.right, r.bottom, TRUE);
+		case WM_SIZE: {
+			RECT r;
+			GetWindowRect(hDlg, &r);
+			MoveWindow(GetDlgItem(hDlg, IDC_IMG), 0, 0, r.right, r.bottom, TRUE);
 		} return 1;
 	}
 	return 0;
 }
 
-BOOL CALLBACK CloseMsgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK CloseMsgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	return 0;
 }
 
-BOOL CALLBACK ServerDlgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ServerDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
-	case WM_INITDIALOG:
-		SetTimer (hDlg, 1, 1000, NULL);
-		return TRUE;
-	case WM_TIMER:
-		g_pOrbiter->UpdateServerWnd (hDlg);
-		return 0;
-	case WM_COMMAND:
-		switch (LOWORD(wParam)) {
-		case IDOK:
-			g_pOrbiter->CloseSession ();
-		}
-		break;
-	case WM_CLOSE:
-		g_pOrbiter->DestroyServerGuiDlg();
-		return 0;
-	case WM_DESTROY:
-		KillTimer (hDlg, 1);
-		return 0;
+		case WM_INITDIALOG:
+			SetTimer(hDlg, 1, 1000, NULL);
+			return TRUE;
+		case WM_TIMER:
+			g_pOrbiter->UpdateServerWnd(hDlg);
+			return 0;
+		case WM_COMMAND:
+			switch (LOWORD(wParam)) {
+				case IDOK:
+					g_pOrbiter->CloseSession();
+			}
+			break;
+		case WM_CLOSE:
+			g_pOrbiter->DestroyServerGuiDlg();
+			return 0;
+		case WM_DESTROY:
+			KillTimer(hDlg, 1);
+			return 0;
 	}
 	return FALSE;
 }
 
-DWORD WINAPI ConsoleInputProc (LPVOID context)
+DWORD WINAPI ConsoleInputProc(LPVOID context)
 {
 	DWORD count, c;
 	char cbuf[1024];
-	HANDLE hStdI = GetStdHandle (STD_INPUT_HANDLE);
-	HANDLE hStdO = GetStdHandle (STD_OUTPUT_HANDLE);
+	HANDLE hStdI = GetStdHandle(STD_INPUT_HANDLE);
+	HANDLE hStdO = GetStdHandle(STD_OUTPUT_HANDLE);
 	Orbiter *orbiter = (Orbiter*)context;
-	SetConsoleMode (hStdI, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT);
-	SetConsoleTextAttribute (hStdI, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-	hConsoleMutex = CreateMutex (NULL, FALSE, NULL);
+	SetConsoleMode(hStdI, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT);
+	SetConsoleTextAttribute(hStdI, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	hConsoleMutex = CreateMutex(NULL, FALSE, NULL);
 	for (;;) {
-		ReadConsole (hStdI, cbuf, 1024, &count, NULL);
-		WriteConsole (hStdO, "> ", 2, &c, NULL);
+		ReadConsole(hStdI, cbuf, 1024, &count, NULL);
+		WriteConsole(hStdO, "> ", 2, &c, NULL);
 
-		WaitForSingleObject (hConsoleMutex, 1000);
+		WaitForSingleObject(hConsoleMutex, 1000);
 		cConsoleCmd[0] = 'x';
-		memcpy (cConsoleCmd+1, cbuf, count);
-		cConsoleCmd[count-1] = '\0'; // eliminates CR
-		ReleaseMutex (hConsoleMutex);
+		memcpy(cConsoleCmd + 1, cbuf, count);
+		cConsoleCmd[count - 1] = '\0'; // eliminates CR
+		ReleaseMutex(hConsoleMutex);
 	}
 }
