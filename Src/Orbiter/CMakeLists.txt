@@ -164,6 +164,10 @@ set(Orbiter_common_libs
 	Winmm.dll
 	comctl32.lib
 	UxTheme.lib
+	#${DX7SDK_LIB_DIR}/dxguid.lib
+	#${DX7SDK_LIB_DIR}/d3dim.lib
+	#${DX7SDK_LIB_DIR}/ddraw.lib
+	#${DX7SDK_LIB_DIR}/dinput.lib
 	${HTML_HELP_LIBRARY}
 	${ZLIB_LIB}
 	${HTMLHELP_LIB}

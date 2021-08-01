@@ -675,8 +675,8 @@ HWND Orbiter::CreateRenderWindow (Config *pCfg, const char *scenario)
 
 		// Create keyboard device
 		if (!pDI->CreateKbdDevice (hRenderWnd)) {
-			CloseSession ();
-			return 0;
+			//CloseSession ();
+			//return 0;
 		}
 
 		// Create joystick device

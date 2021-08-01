@@ -38,10 +38,14 @@ extern "C" {
 #define DLLIMPORT __declspec(dllimport)
 #define DLLCLBK extern "C" __declspec(dllexport)
 
-#ifdef OAPI_IMPLEMENTATION
-#define OAPIFUNC DLLEXPORT
+#ifdef OAPI_STATIC
+#define OAPIFUNC
 #else
-#define OAPIFUNC DLLIMPORT
+	#ifdef OAPI_IMPLEMENTATION
+		#define OAPIFUNC DLLEXPORT
+	#else
+		#define OAPIFUNC DLLIMPORT
+	#endif
 #endif
 
 #pragma warning(disable: 4201)

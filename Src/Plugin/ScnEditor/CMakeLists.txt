@@ -51,4 +51,6 @@ install(FILES ScnEditorAPI.h
 	DESTINATION ${ORBITER_INSTALL_SDK_DIR}/include
 )
 
-add_subdirectory(Help)
+if(ORBITER_MAKE_DOC)
+	add_subdirectory(Help)
+endif()
