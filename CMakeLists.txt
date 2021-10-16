@@ -32,6 +32,8 @@ else()
 	set(PLATFORM_STRING "Win32")
 endif()
 
+set(CMAKE_INSTALL_PREFIX "D:/Programming/libs/orbiter/build/Install")
+
 # Define directories and file paths for some common binaries
 set(OVP_DIR "${CMAKE_SOURCE_DIR}/OVP")
 set(GDICLIENT_DIR "${OVP_DIR}/GDIClient")
@@ -91,6 +93,11 @@ set(DX7SDK_PATH "${EXTERN_DIR}/mssdk_dx7")
 set(DX7SDK_INCLUDE_DIR "${DX7SDK_PATH}/include")
 set(DX7SDK_LIB_DIR "${DX7SDK_PATH}/lib")
 
+set(LUA_DIR "D:/Programming/lib/win64_vc2017/Lua")
+set(LUA_INCLUDE_DIR "D:/Programming/lib/win64_vc2017/Lua/include")
+set(LUA_LIB_DIR "D:/Programming/lib/win64_vc2017/Lua/lib")
+set(LUA_DLL_DIR "D:/Programming/lib/win64_vc2017/Lua/bin")
+set(LUA_LIB "${LUA_LIB_DIR}/lua5.1.lib")
 set(HTMLHELP_DIR "${EXTERN_DIR}/Htmlhelp")
 set(HTMLHELP_INCLUDE_DIR ${HTMLHELP_DIR}/include)
 set(HTMLHELP_LIB_DIR ${HTMLHELP_DIR}/lib-${ARCH})
@@ -308,7 +315,7 @@ if (ORBITER_ENABLE_ASAN AND MSVC)
     if (NOT EXISTS "${asan_binary_dir}")
 		message( FATAL_ERROR "ASAN: Visual Studio tools directory ${asan_binary_dir} not valid, check VCToolsInstallDir environment variable" )
     endif()
-    
+
 	if (BUILD64)
 		set(asan_arch_id "x86_64")
 	else()
