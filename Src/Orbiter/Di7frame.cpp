@@ -7,7 +7,7 @@
 // ====================================================================================
 
 #include "Di7frame.h"
-//#include "D3d7util.h"
+#include "D3d7util.h"
 #include "Log.h"
 
 //-----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ CDIFramework7::~CDIFramework7 ()
 HRESULT CDIFramework7::Create (HINSTANCE hInst)
 {
 	HRESULT hr;
-	/*
+
 	// Create the main DirectInput object
 	if (FAILED (hr = DirectInput8Create (hInst, DIRECTINPUT_VERSION,
 		IID_IDirectInput8, (LPVOID*)&m_pDI, NULL))) {
@@ -59,7 +59,6 @@ HRESULT CDIFramework7::Create (HINSTANCE hInst)
 		memcpy (&m_guidJoystick, &jList.descJoy[0].guidInstance, sizeof (GUID));
 
 	LOGOUT("Found %d joystick(s)", jList.nJoy);
-	*/
 	return S_OK;
 }
 
@@ -70,7 +69,7 @@ HRESULT CDIFramework7::Create (HINSTANCE hInst)
 VOID CDIFramework7::Destroy ()
 {
 	DestroyDevices();
-//	SAFE_RELEASE (m_pDI);
+	SAFE_RELEASE (m_pDI);
 }
 
 //-----------------------------------------------------------------------------
@@ -80,7 +79,6 @@ VOID CDIFramework7::Destroy ()
 //-----------------------------------------------------------------------------
 BOOL CALLBACK CDIFramework7::EnumJoysticksCallback (LPCDIDEVICEINSTANCE pInst, VOID* pvContext)
 {
-	/*
 	// Check here whether the enumerated device is appropriate
 	struct JLIST *jlist = (struct JLIST*)pvContext;
 	DIDEVICEINSTANCE *tmp = new DIDEVICEINSTANCE[jlist->nJoy+1]; TRACENEW
@@ -90,7 +88,6 @@ BOOL CALLBACK CDIFramework7::EnumJoysticksCallback (LPCDIDEVICEINSTANCE pInst, V
 	}
 	jlist->descJoy = tmp;
 	memcpy (jlist->descJoy + jlist->nJoy++, pInst, sizeof(DIDEVICEINSTANCE));
-	*/
 	return DIENUM_CONTINUE;
 }
 
@@ -112,7 +109,6 @@ HRESULT CDIFramework7::CreateDevice (HWND hWnd, LPDIRECTINPUT8 pDI,
 	LPDIRECTINPUTDEVICE8 pDIDevice, GUID guidDevice, const DIDATAFORMAT *pdidDataFormat,
 	DWORD dwFlags)
 {
-	/*
 	// Obtain an interface to the input device
 	if (FAILED (pDI->CreateDevice (guidDevice, &pDIDevice, NULL))) {
 		LOGOUT("ERROR: DI: CreateDeviceEx failed");
@@ -139,8 +135,8 @@ HRESULT CDIFramework7::CreateDevice (HWND hWnd, LPDIRECTINPUT8 pDI,
 		m_pdidMouseDevice = pDIDevice;
 	else
 		m_pdidJoyDevice = pDIDevice;
-		*/
-	return E_FAIL;
+
+	return S_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -149,7 +145,6 @@ HRESULT CDIFramework7::CreateDevice (HWND hWnd, LPDIRECTINPUT8 pDI,
 //-----------------------------------------------------------------------------
 HRESULT CDIFramework7::CreateKbdDevice (HWND hWnd)
 {
-	/*
 	HRESULT hr;
 	if (FAILED (hr = CreateDevice (hWnd, m_pDI, m_pdidKbdDevice, GUID_SysKeyboard,
 		&c_dfDIKeyboard, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND))) return hr;
@@ -162,8 +157,6 @@ HRESULT CDIFramework7::CreateKbdDevice (HWND hWnd)
 	dipdw.diph.dwHow = DIPH_DEVICE;
 	dipdw.dwData = 10;
 	return m_pdidKbdDevice->SetProperty (DIPROP_BUFFERSIZE, &dipdw.diph);
-	*/
-	return E_FAIL;
 }
 
 //-----------------------------------------------------------------------------
@@ -171,7 +164,7 @@ HRESULT CDIFramework7::CreateKbdDevice (HWND hWnd)
 // Desc: Creates a DirectInput device for the mouse
 //-----------------------------------------------------------------------------
 HRESULT CDIFramework7::CreateMouseDevice (HWND hWnd)
-{/*
+{
 	HRESULT hr;
 	if (FAILED (hr = CreateDevice (hWnd, m_pDI, m_pdidMouseDevice, GUID_SysMouse,
 		&c_dfDIMouse, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND))) return hr;
@@ -184,8 +177,6 @@ HRESULT CDIFramework7::CreateMouseDevice (HWND hWnd)
 	diprw.diph.dwHow        = DIPH_DEVICE;
 	diprw.dwData            = DIPROPAXISMODE_ABS;
 	return m_pdidMouseDevice->SetProperty (DIPROP_AXISMODE, &diprw.diph);
-	*/
-	return E_FAIL;
 }
 
 //-----------------------------------------------------------------------------
@@ -193,12 +184,10 @@ HRESULT CDIFramework7::CreateMouseDevice (HWND hWnd)
 // Desc: Creates a DirectInput device for a joystick
 //-----------------------------------------------------------------------------
 HRESULT CDIFramework7::CreateJoyDevice (HWND hWnd, DWORD idx)
-{/*
+{
 	if (idx >= jList.nJoy) return E_FAIL;
 	return CreateDevice (hWnd, m_pDI, m_pdidJoyDevice, jList.descJoy[idx].guidInstance,
 		&c_dfDIJoystick2, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-		*/
-	return E_FAIL;
 }
 
 //-----------------------------------------------------------------------------
@@ -206,7 +195,7 @@ HRESULT CDIFramework7::CreateJoyDevice (HWND hWnd, DWORD idx)
 // Desc: Releases the DirectInput devices
 //-----------------------------------------------------------------------------
 VOID CDIFramework7::DestroyDevices()
-{/*
+{
 	if (m_pdidKbdDevice) {
 		m_pdidKbdDevice->Unacquire ();
 		m_pdidKbdDevice->Release ();
@@ -222,6 +211,5 @@ VOID CDIFramework7::DestroyDevices()
 		m_pdidJoyDevice->Release ();
 		m_pdidJoyDevice = NULL;
 	}
-	*/
 }
 

@@ -87,7 +87,7 @@ set(LUA_DIR "${EXTERN_DIR}/Lua/Lua-${Lua_VER}-${ARCH}")
 set(LUA_INCLUDE_DIR "${LUA_DIR}/include")
 set(LUA_LIB_DIR "${LUA_DIR}/lib")
 set(LUA_DLL_DIR "${LUA_DIR}/dll")
-set(LUA_LIB "${LUA_DLL_DIR}/lua${Lua_VER}.lib")
+set(LUA_LIB "${LUA_LIB_DIR}/lua${Lua_VER}.lib")
 
 set(DX7SDK_PATH "${EXTERN_DIR}/mssdk_dx7")
 set(DX7SDK_INCLUDE_DIR "${DX7SDK_PATH}/include")
@@ -137,7 +137,7 @@ add_custom_target(CopyData ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Flights/ ${CMAKE_BINARY_DIR}/Flights
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Orbitersdk/include/ ${CMAKE_BINARY_DIR}/Orbitersdk/include
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${ORBITER_BINARY_SDK_DIR}/lib/Lua
-	COMMAND ${CMAKE_COMMAND} -E copy ${LUA_DLL_DIR}/lua5.1.lib ${ORBITER_BINARY_SDK_DIR}/lib/Lua/
+	COMMAND ${CMAKE_COMMAND} -E copy ${LUA_LIB_DIR}/lua5.1.lib ${ORBITER_BINARY_SDK_DIR}/lib/Lua/
 	COMMAND ${CMAKE_COMMAND} -E copy ${LUA_DLL_DIR}/lua5.1.dll ${CMAKE_BINARY_DIR}
 )
 set_target_properties(CopyData
@@ -411,7 +411,7 @@ install(DIRECTORY Scenarios Textures Meshes Config Script Flights BinAssets/
 install(FILES ${LUA_DLL_DIR}/lua5.1.dll
 	DESTINATION ${ORBITER_INSTALL_ROOT_DIR}
 )
-install(FILES ${LUA_DLL_DIR}/lua5.1.lib
+install(FILES ${LUA_LIB_DIR}/lua5.1.lib
 	DESTINATION ${ORBITER_INSTALL_SDK_DIR}/lib/Lua
 )
 

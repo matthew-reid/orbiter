@@ -196,8 +196,8 @@ INT WINAPI WinMain (HINSTANCE hInstance, HINSTANCE, PSTR strCmdLine, INT nCmdSho
 #endif
 
     // If we're not running from actual console, hide the window
-    if (ConsoleManager::IsConsoleExclusive())
-        ConsoleManager::ShowConsole(false);
+    //if (ConsoleManager::IsConsoleExclusive())
+    //    ConsoleManager::ShowConsole(false);
     
     SetEnvironmentVars();
 	g_pOrbiter = new Orbiter; // application instance
@@ -235,18 +235,19 @@ INT WINAPI WinMain (HINSTANCE hInstance, HINSTANCE, PSTR strCmdLine, INT nCmdSho
 	return 0;
 }
 
-void SetEnvironmentVars ()
+static void AddToPathEnvironmentVariable(const std::string& path)
 {
-	// Set search path to "Modules" subdirectory so that DLLs are found
 	char *ppath = getenv ("PATH");
 	if (ppath) {
-		char *cbuf = new char[strlen(ppath)+15]; TRACENEW
-		sprintf (cbuf, "PATH=%s;Modules", ppath);
-		_putenv (cbuf);
-		delete []cbuf;
+		_putenv (("PATH=" + std::string(ppath) + ";" + path).c_str());
 	} else {
 		_putenv ("PATH=Modules");
 	}
+}
+
+void SetEnvironmentVars ()
+{
+	AddToPathEnvironmentVariable ("Modules"); // Set search path to "Modules" subdirectory so that DLLs are found
 	_getcwd (cwd, 512);
 }
 
@@ -675,8 +676,8 @@ HWND Orbiter::CreateRenderWindow (Config *pCfg, const char *scenario)
 
 		// Create keyboard device
 		if (!pDI->CreateKbdDevice (hRenderWnd)) {
-			//CloseSession ();
-			//return 0;
+			CloseSession ();
+			return 0;
 		}
 
 		// Create joystick device
